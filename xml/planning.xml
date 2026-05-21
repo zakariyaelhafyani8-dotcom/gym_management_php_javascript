@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    planning.xml - Configuration du planning hebdomadaire
+    Utilisé pour définir les créneaux horaires disponibles
+    et les paramètres de configuration de la salle
+-->
+<gym_planning>
+
+    <configuration>
+        <nom_salle>GymPro Fitness Center</nom_salle>
+        <adresse>123 Rue des Sports, Fès, Maroc</adresse>
+        <telephone>0535123456</telephone>
+        <email>contact@gympro.ma</email>
+        <horaires_ouverture>06:00</horaires_ouverture>
+        <horaires_fermeture>22:00</horaires_fermeture>
+    </configuration>
+
+    <tarifs>
+        <abonnement type="mensuel" duree_jours="30">
+            <prix devise="MAD">250.00</prix>
+            <description>Accès illimité 1 mois</description>
+        </abonnement>
+        <abonnement type="trimestriel" duree_jours="90">
+            <prix devise="MAD">600.00</prix>
+            <description>Accès illimité 3 mois - Économisez 150 MAD</description>
+        </abonnement>
+        <abonnement type="annuel" duree_jours="365">
+            <prix devise="MAD">2000.00</prix>
+            <description>Accès illimité 12 mois - Économisez 1000 MAD</description>
+        </abonnement>
+    </tarifs>
+
+    <salles>
+        <salle id="A">
+            <nom>Salle Musculation</nom>
+            <capacite>20</capacite>
+            <equipements>Haltères, Barres, Bancs, Machines guidées</equipements>
+        </salle>
+        <salle id="B">
+            <nom>Salle Cardio / Yoga</nom>
+            <capacite>15</capacite>
+            <equipements>Tapis, Vélos, Treadmills, Mats de yoga</equipements>
+        </salle>
+        <salle id="C">
+            <nom>Salle Cours Collectifs</nom>
+            <capacite>25</capacite>
+            <equipements>Sound system, Miroirs, Espace libre</equipements>
+        </salle>
+    </salles>
+
+    <creneaux_types>
+        <creneau id="matin_tot">
+            <label>Tôt le matin</label>
+            <debut>06:00</debut>
+            <fin>08:00</fin>
+        </creneau>
+        <creneau id="matin">
+            <label>Matin</label>
+            <debut>08:00</debut>
+            <fin>12:00</fin>
+        </creneau>
+        <creneau id="midi">
+            <label>Midi</label>
+            <debut>12:00</debut>
+            <fin>14:00</fin>
+        </creneau>
+        <creneau id="apres_midi">
+            <label>Après-midi</label>
+            <debut>14:00</debut>
+            <fin>18:00</fin>
+        </creneau>
+        <creneau id="soir">
+            <label>Soir</label>
+            <debut>18:00</debut>
+            <fin>22:00</fin>
+        </creneau>
+    </creneaux_types>
+
+    <jours_feries>
+        <jour date="2026-01-01">Nouvel An</jour>
+        <jour date="2026-05-01">Fête du Travail</jour>
+    </jours_feries>
+
+</gym_planning>

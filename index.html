@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymPro Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ==============================
+     LOGIN SCREEN
+     ============================== -->
+<div id="login-screen" class="login-page" style="display:none">
+    <div class="login-card">
+        <div class="login-logo">
+            <div class="logo-circle">
+                <i class="fas fa-dumbbell" style="color:#fff"></i>
+            </div>
+            <h1>GYM<span style="color:var(--primary-light)">PRO</span></h1>
+            <p>Système de gestion de salle de sport</p>
+        </div>
+        <div class="login-form">
+            <div class="form-group">
+                <label>Adresse email</label>
+                <div class="input-icon-wrap">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="login-email" placeholder="admin@gym.com" autocomplete="email">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Mot de passe</label>
+                <div class="input-icon-wrap">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="login-password" placeholder="••••••••">
+                </div>
+            </div>
+            <button class="btn btn-primary btn-login" id="login-btn" onclick="doLogin()">
+                <i class="fas fa-sign-in-alt"></i> Se connecter
+            </button>
+        </div>
+        <p style="text-align:center;margin-top:20px;font-size:0.78rem;color:var(--text-dim)">
+            Demo: admin@gym.com / password
+        </p>
+    </div>
+</div>
+
+<!-- ==============================
+     APP SCREEN
+     ============================== -->
+<div id="app-screen" class="app-container" style="display:none">
+
+    <!-- SIDEBAR BACKDROP (mobile) -->
+    <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="closeSidebar()"></div>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar">
+        <!-- Logo -->
+        <div class="sidebar-logo">
+            <div class="logo-icon"><i class="fas fa-dumbbell" style="color:#fff;font-size:1.1rem"></i></div>
+            <h1>GYM<span>PRO</span></h1>
+        </div>
+
+        <!-- User info -->
+        <div class="sidebar-user">
+            <div class="user-avatar" id="sidebar-avatar">AD</div>
+            <div class="user-info">
+                <div class="name" id="sidebar-username">Admin</div>
+                <div class="role" id="sidebar-role">Administrateur</div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Principal</div>
+
+            <div class="nav-item" data-page="dashboard" onclick="navigateTo('dashboard')">
+                <i class="fas fa-th-large"></i> Tableau de bord
+            </div>
+
+            <div class="nav-section-label admin-only">Gestion</div>
+
+            <div class="nav-item admin-only" data-page="clients" onclick="navigateTo('clients')">
+                <i class="fas fa-users"></i> Clients
+            </div>
+            <div class="nav-item admin-only" data-page="abonnements" onclick="navigateTo('abonnements')">
+                <i class="fas fa-id-card"></i> Abonnements
+            </div>
+            <div class="nav-item admin-only" data-page="paiements" onclick="navigateTo('paiements')">
+                <i class="fas fa-credit-card"></i> Paiements
+            </div>
+
+            <div class="nav-section-label">Planning</div>
+
+            <div class="nav-item" data-page="seances" onclick="navigateTo('seances')">
+                <i class="fas fa-calendar-alt"></i> Séances
+            </div>
+
+            <div class="nav-item admin-only" data-page="stats" onclick="navigateTo('stats')">
+                <i class="fas fa-chart-bar"></i> Statistiques
+            </div>
+
+            <div class="nav-item" id="nav-coach" data-page="coach" onclick="navigateTo('coach')">
+                <i class="fas fa-user-tie"></i> Mon Espace
+            </div>
+        </nav>
+
+        <!-- Footer -->
+        <div class="sidebar-footer">
+            <button class="btn-logout" onclick="doLogout()">
+                <i class="fas fa-sign-out-alt"></i> Déconnexion
+            </button>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div>
+                    <h2 id="topbar-title">Tableau de bord</h2>
+                </div>
+            </div>
+            <div class="topbar-right">
+                <div class="topbar-date" id="topbar-date"></div>
+                <div class="notif-btn" title="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <div class="notif-badge">!</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ===========================
+             PAGE : DASHBOARD
+             =========================== -->
+        <div class="page active" id="page-dashboard">
+            <div class="page-header">
+                <h2>Tableau de <span>Bord</span></h2>
+            </div>
+
+            <!-- Stats cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-user-check"></i></div>
+                    <div class="stat-value" id="stat-clients">—</div>
+                    <div class="stat-label">Membres actifs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-value" id="stat-total">—</div>
+                    <div class="stat-label">Total clients</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-calendar-day"></i></div>
+                    <div class="stat-value" id="stat-seances">—</div>
+                    <div class="stat-label">Séances aujourd'hui</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
+                    <div class="stat-value" id="stat-expires" style="color:var(--danger)">—</div>
+                    <div class="stat-label">Abonnements expirés</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-coins"></i></div>
+                    <div class="stat-value" style="font-size:1.6rem" id="stat-revenus">—</div>
+                    <div class="stat-label">Revenus ce mois</div>
+                </div>
+            </div>
+
+            <!-- Charts + Recent -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-bar"></i> Revenus (6 derniers mois)</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-users"></i> Clients récents</h3>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Client</th><th>Statut</th><th>Expiration</th></tr></thead>
+                            <tbody id="recent-clients-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===========================
+             PAGE : CLIENTS
+             =========================== -->
+        <div class="page" id="page-clients">
+            <div class="page-header">
+                <h2>Gestion des <span>Clients</span></h2>
+                <button class="btn btn-primary" onclick="openAddClient()">
+                    <i class="fas fa-plus"></i> Nouveau client
+                </button>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="search-bar">
+                        <div class="search-input-wrap">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Rechercher par nom, prénom ou email..." oninput="searchClients(this.value)">
+                        </div>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Client</th><th>Téléphone</th><th>Abonnement</th>
+                                <th>Expiration</th><th>Inscrit le</th><th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clients-tbody">
+                            <tr><td colspan="6" style="text-align:center;padding:30px"><div class="loader"></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===========================
+             PAGE : ABONNEMENTS
+             =========================== -->
+        <div class="page" id="page-abonnements">
+            <div class="page-header">
+                <h2>Gestion des <span>Abonnements</span></h2>
+                <button class="btn btn-primary" onclick="openModal('abo-modal')">
+                    <i class="fas fa-plus"></i> Nouvel abonnement
+                </button>
+            </div>
+            <div class="card">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Client</th><th>Type</th><th>Début</th>
+                                <th>Fin</th><th>Statut</th><th>Montant</th><th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="abonnements-tbody">
+                            <tr><td colspan="7" style="text-align:center;padding:30px"><div class="loader"></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===========================
+             PAGE : SÉANCES
+             =========================== -->
+        <div class="page" id="page-seances">
+            <div class="page-header">
+                <h2>Planning des <span>Séances</span></h2>
+                <button class="btn btn-primary admin-only" onclick="openModal('seance-modal')">
+                    <i class="fas fa-plus"></i> Nouvelle séance
+                </button>
+            </div>
+            <div id="seances-container">
+                <div style="text-align:center;padding:50px"><div class="loader"></div></div>
+            </div>
+        </div>
+
+        <!-- ===========================
+             PAGE : PAIEMENTS
+             =========================== -->
+        <div class="page" id="page-paiements">
+            <div class="page-header">
+                <h2>Gestion des <span>Paiements</span></h2>
+                <button class="btn btn-primary" onclick="openModal('paiement-modal')">
+                    <i class="fas fa-plus"></i> Enregistrer un paiement
+                </button>
+            </div>
+            <div class="card">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Client</th><th>Abonnement</th><th>Montant</th>
+                                <th>Mode</th><th>Statut</th><th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paiements-tbody">
+                            <tr><td colspan="6" style="text-align:center;padding:30px"><div class="loader"></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===========================
+             PAGE : COACH SPACE
+             =========================== -->
+        <div class="page" id="page-coach">
+            <div class="page-header">
+                <h2>Mon <span>Espace</span></h2>
+            </div>
+            <div class="coach-banner">
+                <div class="coach-avatar-lg" id="coach-avatar-display">KO</div>
+                <div>
+                    <h3 id="coach-name-display">Coach</h3>
+                    <p>Vos séances planifiées</p>
+                </div>
+            </div>
+            <div id="coach-seances-list">
+                <div style="text-align:center;padding:40px"><div class="loader"></div></div>
+            </div>
+        </div>
+
+        <!-- ===========================
+             PAGE : STATISTIQUES
+             =========================== -->
+        <div class="page" id="page-stats">
+            <div class="page-header">
+                <h2><span>Statistiques</span></h2>
+            </div>
+            <div class="stats-grid mb-3">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-user-check"></i></div>
+                    <div class="stat-value" id="stats-actifs">—</div>
+                    <div class="stat-label">Membres actifs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-value" id="stats-total">—</div>
+                    <div class="stat-label">Total clients</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
+                    <div class="stat-value" style="color:var(--danger)" id="stats-expires">—</div>
+                    <div class="stat-label">Abonnements expirés</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-coins"></i></div>
+                    <div class="stat-value" style="font-size:1.4rem" id="stats-revenus">—</div>
+                    <div class="stat-label">Revenus ce mois</div>
+                </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-line"></i> Évolution des revenus</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container"><canvas id="statsChart"></canvas></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-exclamation-circle" style="color:var(--danger)"></i> Abonnements expirés</h3>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Nom</th><th>Email</th><th>Type</th><th>Expirée le</th><th>Statut</th></tr></thead>
+                            <tbody id="expired-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- ==============================
+     MODALS
+     ============================== -->
+
+<!-- Modal: Ajouter/Modifier Client -->
+<div class="modal-overlay" id="client-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3><i class="fas fa-user"></i> <span id="client-modal-title">Ajouter un client</span></h3>
+            <div class="modal-close" onclick="closeModal('client-modal')"><i class="fas fa-times"></i></div>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="client-id">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Prénom *</label>
+                    <input type="text" id="client-prenom" placeholder="Mohammed">
+                </div>
+                <div class="form-group">
+                    <label>Nom *</label>
+                    <input type="text" id="client-nom" placeholder="El Fassi">
+                </div>
+                <div class="form-group full">
+                    <label>Email *</label>
+                    <input type="email" id="client-email" placeholder="client@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Téléphone</label>
+                    <input type="tel" id="client-telephone" placeholder="0600000000">
+                </div>
+                <div class="form-group">
+                    <label>Date de naissance</label>
+                    <input type="date" id="client-dob">
+                </div>
+                <div class="form-group full">
+                    <label>Adresse</label>
+                    <textarea id="client-adresse" rows="2" placeholder="Adresse complète..."></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('client-modal')">Annuler</button>
+            <button class="btn btn-primary" onclick="saveClient()">
+                <i class="fas fa-save"></i> Enregistrer
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Abonnement -->
+<div class="modal-overlay" id="abo-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3><i class="fas fa-id-card"></i> Nouvel abonnement</h3>
+            <div class="modal-close" onclick="closeModal('abo-modal')"><i class="fas fa-times"></i></div>
+        </div>
+        <div class="modal-body">
+            <div class="form-grid">
+                <div class="form-group full">
+                    <label>Client *</label>
+                    <select id="abo-client-id"><option value="">-- Choisir --</option></select>
+                </div>
+                <div class="form-group">
+                    <label>Type d'abonnement</label>
+                    <select id="abo-type" onchange="updateAboPrice()">
+                        <option value="mensuel">Mensuel - 250 MAD</option>
+                        <option value="trimestriel">Trimestriel - 600 MAD</option>
+                        <option value="annuel">Annuel - 2000 MAD</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Montant (MAD)</label>
+                    <input type="number" id="abo-montant" value="250" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label>Date début *</label>
+                    <input type="date" id="abo-debut" onchange="updateAboFin()">
+                </div>
+                <div class="form-group">
+                    <label>Date fin *</label>
+                    <input type="date" id="abo-fin">
+                </div>
+                <div class="form-group full">
+                    <label>Mode de paiement</label>
+                    <select id="abo-mode">
+                        <option value="espèces">Espèces</option>
+                        <option value="carte">Carte bancaire</option>
+                        <option value="virement">Virement</option>
+                        <option value="chèque">Chèque</option>
+                    </select>
+                </div>
+            </div>
+            <p class="text-muted mt-2" style="font-size:0.8rem">
+                <i class="fas fa-info-circle"></i> Un paiement sera automatiquement enregistré.
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('abo-modal')">Annuler</button>
+            <button class="btn btn-primary" onclick="saveAbonnement()">
+                <i class="fas fa-save"></i> Créer l'abonnement
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Nouvelle séance -->
+<div class="modal-overlay" id="seance-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3><i class="fas fa-calendar-plus"></i> Nouvelle séance</h3>
+            <div class="modal-close" onclick="closeModal('seance-modal')"><i class="fas fa-times"></i></div>
+        </div>
+        <div class="modal-body">
+            <div class="form-grid">
+                <div class="form-group full">
+                    <label>Titre *</label>
+                    <input type="text" id="seance-titre" placeholder="Ex: Musculation Débutant">
+                </div>
+                <div class="form-group full">
+                    <label>Coach</label>
+                    <select id="seance-coach-id"></select>
+                </div>
+                <div class="form-group">
+                    <label>Date *</label>
+                    <input type="date" id="seance-date">
+                </div>
+                <div class="form-group">
+                    <label>Salle</label>
+                    <input type="text" id="seance-salle" placeholder="Salle A">
+                </div>
+                <div class="form-group">
+                    <label>Heure début</label>
+                    <input type="time" id="seance-hdebut" value="08:00">
+                </div>
+                <div class="form-group">
+                    <label>Heure fin</label>
+                    <input type="time" id="seance-hfin" value="09:30">
+                </div>
+                <div class="form-group">
+                    <label>Capacité max</label>
+                    <input type="number" id="seance-capacite" value="20" min="1">
+                </div>
+                <div class="form-group full">
+                    <label>Description</label>
+                    <textarea id="seance-desc" rows="2" placeholder="Description optionnelle..."></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('seance-modal')">Annuler</button>
+            <button class="btn btn-primary" onclick="saveSeance()">
+                <i class="fas fa-save"></i> Créer la séance
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Inscriptions séance -->
+<div class="modal-overlay" id="inscriptions-modal">
+    <div class="modal" style="max-width:680px">
+        <div class="modal-header">
+            <h3><i class="fas fa-users"></i> <span id="inscriptions-titre">Inscrits</span></h3>
+            <div class="modal-close" onclick="closeModal('inscriptions-modal')"><i class="fas fa-times"></i></div>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="current-seance-id">
+            <!-- Add inscription -->
+            <div style="display:flex;gap:10px;margin-bottom:18px">
+                <select id="inscrit-client-id" style="flex:1"><option value="">-- Choisir un client --</option></select>
+                <button class="btn btn-primary" onclick="inscrireClient()">
+                    <i class="fas fa-user-plus"></i> Inscrire
+                </button>
+            </div>
+            <p class="text-muted mb-2" style="font-size:0.8rem">
+                <i class="fas fa-info-circle"></i> Seuls les clients avec un abonnement actif peuvent être inscrits.
+            </p>
+            <!-- List of enrolled -->
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Nom</th><th>Email</th><th>Abonnement</th><th>Action</th></tr></thead>
+                    <tbody id="inscrits-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('inscriptions-modal')">Fermer</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Paiement -->
+<div class="modal-overlay" id="paiement-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3><i class="fas fa-credit-card"></i> Enregistrer un paiement</h3>
+            <div class="modal-close" onclick="closeModal('paiement-modal')"><i class="fas fa-times"></i></div>
+        </div>
+        <div class="modal-body">
+            <div class="form-grid">
+                <div class="form-group full">
+                    <label>Client *</label>
+                    <select id="paiement-client-id"><option value="">-- Choisir --</option></select>
+                </div>
+                <div class="form-group">
+                    <label>Montant (MAD) *</label>
+                    <input type="number" id="paiement-montant" placeholder="250.00" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label>Mode de paiement</label>
+                    <select id="paiement-mode">
+                        <option value="espèces">Espèces</option>
+                        <option value="carte">Carte bancaire</option>
+                        <option value="virement">Virement</option>
+                        <option value="chèque">Chèque</option>
+                    </select>
+                </div>
+                <div class="form-group full">
+                    <label>Note</label>
+                    <textarea id="paiement-note" rows="2" placeholder="Note optionnelle..."></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('paiement-modal')">Annuler</button>
+            <button class="btn btn-primary" onclick="savePaiement()">
+                <i class="fas fa-save"></i> Enregistrer
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Historique client -->
+<div class="modal-overlay" id="history-modal">
+    <div class="modal" style="max-width:720px">
+        <div class="modal-header">
+            <h3><i class="fas fa-history"></i> Historique client</h3>
+            <div class="modal-close" onclick="closeModal('history-modal')"><i class="fas fa-times"></i></div>
+        </div>
+        <div class="modal-body" id="history-body"></div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('history-modal')">Fermer</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
